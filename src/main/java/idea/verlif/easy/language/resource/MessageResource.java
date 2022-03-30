@@ -1,5 +1,8 @@
 package idea.verlif.easy.language.resource;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -20,6 +23,12 @@ public class MessageResource {
 
     public Locale getLocale() {
         return locale;
+    }
+
+    public void loadFromFile(File file) throws IOException {
+        try (FileReader reader = new FileReader(file)) {
+            properties.load(reader);
+        }
     }
 
     public String get(String code) {

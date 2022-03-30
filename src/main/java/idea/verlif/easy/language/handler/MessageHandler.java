@@ -20,6 +20,14 @@ public interface MessageHandler {
     void add(MessageResource resource);
 
     /**
+     * 获取设定语言对应的文本资源
+     *
+     * @param locale 设定的语言。当设定的语言为null时，返回默认文本资源。
+     * @return 文本资源。可能为null
+     */
+    MessageResource getResource(Locale locale);
+
+    /**
      * 获取code对应的文本信息
      *
      * @param code   文本代号

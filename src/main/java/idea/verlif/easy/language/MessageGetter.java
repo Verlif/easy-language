@@ -1,15 +1,15 @@
 package idea.verlif.easy.language;
 
+import idea.verlif.easy.language.config.GetterConfig;
 import idea.verlif.easy.language.handler.MessageHandler;
 import idea.verlif.easy.language.handler.impl.InitMessageHandler;
 import idea.verlif.easy.language.resource.MessageResource;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Locale;
-import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author Verlif
@@ -24,12 +24,15 @@ public class MessageGetter {
     private final MessageHandler defaultHandler;
     private final Locale defaultLocale;
 
+    private final GetterConfig config;
+
     /**
      * 使用系统推断的语言类型
      */
     public MessageGetter() {
+        this.config = new GetterConfig();
         this.defaultLocale = Locale.getDefault();
-        this.defaultHandler = new InitMessageHandler();
+        this.defaultHandler = new InitMessageHandler(config);
     }
 
     /**
@@ -38,8 +41,9 @@ public class MessageGetter {
      * @param tag 语言标识
      */
     public MessageGetter(String tag) {
+        this.config = new GetterConfig();
         this.defaultLocale = parserLocale(tag);
-        this.defaultHandler = new InitMessageHandler();
+        this.defaultHandler = new InitMessageHandler(config);
     }
 
     /**
@@ -48,8 +52,16 @@ public class MessageGetter {
      * @param defaultLocale 默认的语言
      */
     public MessageGetter(Locale defaultLocale) {
+        this.config = new GetterConfig();
         this.defaultLocale = defaultLocale;
-        this.defaultHandler = new InitMessageHandler();
+        this.defaultHandler = new InitMessageHandler(config);
+    }
+
+    /**
+     * 获取配置
+     */
+    public GetterConfig getConfig() {
+        return config;
     }
 
     /**
@@ -80,10 +92,10 @@ public class MessageGetter {
     }
 
     /**
-     * 添加资源文件
+     * 添加资源文件。当设定语言已存在时，进行替换与补充。
      *
      * @param path   资源文件或文件夹路径
-     * @param locale 资源文件设定的语言
+     * @param locale 资源文件设定的语言。置为null则添加或替换到默认文本资源。
      * @throws IOException 读取错误
      */
     public void addResource(String path, Locale locale) throws IOException {
@@ -91,23 +103,24 @@ public class MessageGetter {
     }
 
     /**
-     * 添加资源文件
+     * 添加资源文件。当设定语言已存在时，进行替换与补充。
      *
      * @param file   资源文件对象
-     * @param locale 资源文件设定的语言
+     * @param locale 资源文件设定的语言。置为null则添加或替换到默认文本资源。
      * @throws IOException 读取错误
      */
     public void addResource(File file, Locale locale) throws IOException {
         if (file.isDirectory()) {
-            throw new IOException(file.getName() + " is a directory, but there need a file.");
+            throw new IOException(file.getAbsolutePath() + " is not a file");
         }
+        MessageResource resource = defaultHandler.getResource(locale);
         MessageResource mr = new MessageResource(locale);
-        Properties properties = new Properties();
-        try (FileReader reader = new FileReader(file)) {
-            properties.load(reader);
+        mr.loadFromFile(file);
+        if (resource == null) {
+            defaultHandler.add(mr);
+        } else {
+            resource.getProperties().putAll(mr.getProperties());
         }
-        mr.getProperties().putAll(properties);
-        defaultHandler.add(mr);
     }
 
     /**
@@ -151,11 +164,7 @@ public class MessageGetter {
             locale = new Locale(parts[1], parts[2]);
         }
         MessageResource mr = new MessageResource(locale);
-        Properties properties = new Properties();
-        try (FileReader reader = new FileReader(resource)) {
-            properties.load(reader);
-        }
-        mr.getProperties().putAll(properties);
+        mr.loadFromFile(resource);
         defaultHandler.add(mr);
     }
 
@@ -190,6 +199,15 @@ public class MessageGetter {
     public String get(String code, String tag) {
         Locale locale = parserLocale(tag);
         return defaultHandler.get(code, locale);
+    }
+
+    /**
+     * 获取当前可用的文本代码列表
+     *
+     * @return 文本代码列表
+     */
+    public Set<String> codeSet() {
+        return defaultHandler.keys();
     }
 
     private Locale parserLocale(String tag) {

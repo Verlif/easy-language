@@ -24,6 +24,11 @@ nihao=hello
 nihao=nihaotest
 ```
 
+```properties
+# resource_addon.properties
+wohao=我好
+```
+
 这三个文件都放在`resources`目录下，此时我们可以通过以下代码来获取：
 
 ```java
@@ -31,19 +36,25 @@ nihao=nihaotest
 MessageGetter getter = new MessageGetter();
 // 添加语言文件，可以同时添加不同文件夹。也可以在添加时直接指定对应语言。
 getter.addResource("src\\main\\resources");
+// 更改信息获取器设置
+getter.getConfig().setResultType(GetterConfig.ResultType.WITH_NULL);
 // 使用信息获取器默认的语言获取文本
 System.out.println(getter.get("nihao"));
 // 指定语言获取文本
 System.out.println(getter.get("nihao", Locale.ENGLISH));
-// 当没有此语言文件时，优先从默认语言资源中获取
+// 由于之前的设定，当没有此语言文件时，优先从备用语言资源中获取。
 System.out.println(getter.get("nihao", Locale.FRENCH));
 // 可以直接指定语言文件后缀
 System.out.println(getter.get("nihao", "test"));
-// 当默认语言资源中没有此语言代码时，会直接返回语言代码
+// 由于之前的设定，当备用语言资源中也没有此语言代码时，会返回null
+System.out.println(getter.get("wohao"));
+// 对已有的语言进行信息追加。这里的语言传入null则会追加到备用语言资源中。
+getter.addResource("src\\main\\resources", (Locale) null);
+// 此时再次获取则会查询到信息
 System.out.println(getter.get("wohao"));
 ```
 
-__注意__：没有后缀的`resource.properties`是作为 __默认语言资源__，也就是最终替补出现的。当没有需要的语言或文本代码时，就会从这个资源中提取文本。
+__注意__：没有后缀的`resource.properties`是作为 __备用语言资源__，也就是最终替补出现的。当没有需要的语言或文本代码时，就会从这个资源中提取文本。
 
 所以最终的输出就是：
 
@@ -52,8 +63,15 @@ __注意__：没有后缀的`resource.properties`是作为 __默认语言资源_
 hello
 你好
 nihaotest
-wohao
+null
+我好
 ```
+
+## GetterConfig
+
+| 参数 | 参数类型 | 参数说明                                                                                                                                                                                                            |
+| ---- |----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| resultType | 枚举 | 取值模式，包括以下模式：<br/>Hard - 严格模式，只在设定的语言资源中查询，不进行备用语言资源查询。设定的语言资源中不存在时，返回NULL。<br/>EASY(默认) - 兼容模式，设定的语言资源中不存在时，在默认语言资源中查询。当默认语言资源中也不存在时，返回文本代码。<br/>WITH_NULL - 空值模式，设定的语言资源中不存在时，在默认语言资源中查询。当默认语言资源中也不存在时，返回NULL。 |
 
 ## 说明
 
@@ -90,7 +108,7 @@ wohao
 >        <dependency>
 >            <groupId>com.github.Verlif</groupId>
 >            <artifactId>easy-language</artifactId>
->            <version>0.1</version>
+>            <version>0.2</version>
 >        </dependency>
 >    </dependencies>
 > ```
@@ -98,6 +116,6 @@ wohao
 > Gradle
 > ```text
 > dependencies {
->   implementation 'com.github.Verlif:easy-language:0.1'
+>   implementation 'com.github.Verlif:easy-language:0.2'
 > }
 > ```

@@ -1,5 +1,6 @@
 package idea.verlif.easy.language.handler.impl;
 
+import idea.verlif.easy.language.config.GetterConfig;
 import idea.verlif.easy.language.handler.MessageHandler;
 import idea.verlif.easy.language.resource.MessageResource;
 
@@ -15,7 +16,10 @@ public final class InitMessageHandler implements MessageHandler {
     private MessageResource defaultResource;
     private final Map<String, MessageResource> resourceMap;
 
-    public InitMessageHandler() {
+    private final GetterConfig config;
+
+    public InitMessageHandler(GetterConfig config) {
+        this.config = config;
         this.resourceMap = new HashMap<>();
     }
 
@@ -30,17 +34,36 @@ public final class InitMessageHandler implements MessageHandler {
     }
 
     @Override
+    public MessageResource getResource(Locale locale) {
+        return locale == null ? defaultResource : resourceMap.get(locale.toLanguageTag());
+    }
+
+    @Override
     public String get(String code, Locale locale) {
-        if (locale != null) {
-            MessageResource resource = resourceMap.get(locale.toLanguageTag());
-            if (resource != null) {
-                String value = resource.get(code);
-                if (value != null) {
-                    return value;
+        MessageResource resource = locale == null ? defaultResource : resourceMap.get(locale.toLanguageTag());
+        switch (config.getResultType()) {
+            case HARD:
+                if (resource == null) {
+                    return null;
                 }
-            }
+                return resource.get(code);
+            case EASY:
+                if (resource != null) {
+                    String value = resource.get(code);
+                    if (value != null) {
+                        return value;
+                    }
+                }
+                return resource == defaultResource ? code : defaultResource.get(code, code);
+            default:
+                if (resource != null) {
+                    String value = resource.get(code);
+                    if (value != null) {
+                        return value;
+                    }
+                }
+                return resource == defaultResource ? null : defaultResource.get(code);
         }
-        return defaultResource.get(code, code);
     }
 
     @Override
