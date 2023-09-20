@@ -153,19 +153,23 @@ public class MessageGetter {
     }
 
     private void handleResource(File resource) throws IOException {
-        String filename = resource.getName();
-        String[] parts = filename.substring(0, filename.length() - END.length()).split(SPLIT, 4);
-        Locale locale;
-        if (parts.length == 1) {
-            locale = null;
-        } else if (parts.length == 2) {
-            locale = new Locale(parts[1]);
-        } else {
-            locale = new Locale(parts[1], parts[2]);
+        if (resource.isFile()) {
+            String filename = resource.getName();
+            if (filename.length() > END.length()) {
+                String[] parts = filename.substring(0, filename.length() - END.length()).split(SPLIT, 4);
+                Locale locale;
+                if (parts.length == 1) {
+                    locale = null;
+                } else if (parts.length == 2) {
+                    locale = new Locale(parts[1]);
+                } else {
+                    locale = new Locale(parts[1], parts[2]);
+                }
+                MessageResource mr = new MessageResource(locale);
+                mr.loadFromFile(resource);
+                defaultHandler.add(mr);
+            }
         }
-        MessageResource mr = new MessageResource(locale);
-        mr.loadFromFile(resource);
-        defaultHandler.add(mr);
     }
 
     /**

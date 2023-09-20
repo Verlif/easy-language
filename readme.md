@@ -69,9 +69,9 @@ null
 
 ## GetterConfig
 
-| 参数 | 参数类型 | 参数说明                                                                                                                                                                                                            |
-| ---- |----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| resultType | 枚举 | 取值模式，包括以下模式：<br/>Hard - 严格模式，只在设定的语言资源中查询，不进行备用语言资源查询。设定的语言资源中不存在时，返回NULL。<br/>EASY(默认) - 兼容模式，设定的语言资源中不存在时，在默认语言资源中查询。当默认语言资源中也不存在时，返回文本代码。<br/>WITH_NULL - 空值模式，设定的语言资源中不存在时，在默认语言资源中查询。当默认语言资源中也不存在时，返回NULL。 |
+| 参数         | 参数类型 | 参数说明                                                                                                                                                                                                                            |
+|------------|------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| resultType | 枚举   | 取值模式，包括以下模式：<br/>`Hard` - 严格模式，只在设定的语言资源中查询，不进行备用语言资源查询。设定的语言资源中不存在时，返回 __NULL__。<br/>`EASY`(默认) - 兼容模式，设定的语言资源中不存在时，在默认语言资源中查询。当默认语言资源中也不存在时，返回文本代码。<br/>`WITH_NULL` - 空值模式，设定的语言资源中不存在时，在默认语言资源中查询。当默认语言资源中也不存在时，返回 __NULL__。 |
 
 ## 说明
 
@@ -81,41 +81,47 @@ null
 
 1. 添加Jitpack仓库源
 
-> maven
-> ```xml
-> <repositories>
->    <repository>
->        <id>jitpack.io</id>
->        <url>https://jitpack.io</url>
->    </repository>
-> </repositories>
-> ```
+   maven
 
-> Gradle
-> ```text
-> allprojects {
->   repositories {
->       maven { url 'https://jitpack.io' }
->   }
-> }
-> ```
+   ```xml
+   <repositories>
+      <repository>
+          <id>jitpack.io</id>
+          <url>https://jitpack.io</url>
+      </repository>
+   </repositories>
+   ```
+
+   Gradle
+
+   ```text
+   allprojects {
+     repositories {
+         maven { url 'https://jitpack.io' }
+     }
+   }
+   ```
 
 2. 添加依赖
 
-> maven
-> ```xml
->    <dependencies>
->        <dependency>
->            <groupId>com.github.Verlif</groupId>
->            <artifactId>easy-language</artifactId>
->            <version>0.2</version>
->        </dependency>
->    </dependencies>
-> ```
+   __lastVersion__ [![](https://jitpack.io/v/Verlif/easy-language.svg)](https://jitpack.io/#Verlif/easy-language)
 
-> Gradle
-> ```text
-> dependencies {
->   implementation 'com.github.Verlif:easy-language:0.2'
-> }
-> ```
+   maven
+
+   ```xml
+      <dependencies>
+          <dependency>
+              <groupId>com.github.Verlif</groupId>
+              <artifactId>easy-language</artifactId>
+              <version>0.2</version>
+          </dependency>
+      </dependencies>
+   ```
+
+   Gradle
+
+   ```text
+   dependencies {
+     implementation 'com.github.Verlif:easy-language:0.2'
+   }
+   ```
