@@ -5,6 +5,8 @@ __简单语言包__
 这仅仅是一个简单的语言文件切换工具，与Java内置的`ResourceBundle`类似，都是通过`properties`文件来加载不同的语言文件的。  
 唯一的区别就是更自由一些。
 
+**此项目已由[easy-dict](https://github.com/Verlif/easy-dict)实现，并提供更易用拓展性更高的使用方式，请移步[easy-dict](https://github.com/Verlif/easy-dict)。**
+
 ## 使用
 
 例如此时我们有如下三个语言文件：
